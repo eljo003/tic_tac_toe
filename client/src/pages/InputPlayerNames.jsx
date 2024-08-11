@@ -58,38 +58,45 @@ const ModalButton = styled.button`
 `;
 
 const InputPlayerNames = ({ isOpen, onClose, onStart }) => {
-    if (!isOpen) return null;
+  if (!isOpen) return null;
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const player1 = event.target.player1.value;
-        const player2 = event.target.player2.value;
-        onStart(player1, player2);
-    };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const { player1, player2 } = event.target.elements;
+    onStart(player1.value, player2.value);
+  };
 
-    return (
-        <ModalOverlay>
-            <ModalContent>
-                <ModalClose onClick={onClose}>&times;</ModalClose>
-                <h2>Enter Player Names</h2>
-                <form onSubmit={handleSubmit}>
-                <ModalInput>
-                    <label>
-                    Player 1:
-                    <input type="text" name="player1" placeholder="Enter Player 1 Name" required />
-                    </label>
-                </ModalInput>
-                <ModalInput>
-                    <label>
-                    Player 2:
-                    <input type="text" name="player2" placeholder="Enter Player 2 Name" required />
-                    </label>
-                </ModalInput>
-                <ModalButton type="submit">Start Game</ModalButton>
-                </form>
-            </ModalContent>
-        </ModalOverlay>
-    );
-}
+  return (
+    <ModalOverlay>
+      <ModalContent>
+        <ModalClose onClick={onClose}>&times;</ModalClose>
+        <h2>Enter Player Names</h2>
+        <form onSubmit={handleSubmit}>
+          <ModalInput>
+            <label htmlFor="player1">Player 1:</label>
+            <input
+              type="text"
+              id="player1"
+              name="player1"
+              placeholder="Enter Player 1 Name"
+              required
+            />
+          </ModalInput>
+          <ModalInput>
+            <label htmlFor="player2">Player 2:</label>
+            <input
+              type="text"
+              id="player2"
+              name="player2"
+              placeholder="Enter Player 2 Name"
+              required
+            />
+          </ModalInput>
+          <ModalButton type="submit">Start Game</ModalButton>
+        </form>
+      </ModalContent>
+    </ModalOverlay>
+  );
+};
 
 export default InputPlayerNames;

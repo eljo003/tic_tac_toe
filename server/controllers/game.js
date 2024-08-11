@@ -9,15 +9,7 @@ export const get = (req,res) => {
 }
 
 export const create = (req,res) => {
-    // db.connect((err) => {
-    //     if (err) {
-    //         console.error('Error connecting to the database:', err);
-    //         return;
-    //     }
-    //     res.json("connected")
-    // });
     const getMaxGameIdQuery = req.body.newInputs.session === "NEW" ? "SELECT IFNULL(MAX(gameid), 0) + 1 AS max_gameid FROM games;" : "SELECT MAX(gameid) AS max_gameid FROM games;"
-    // const getMaxGameIdQuery = "SELECT IFNULL(MAX(gameid), 0) + 1 AS max_gameid FROM games;"
     db.query(getMaxGameIdQuery,(err,result) =>{
         if(err) return res.json(err);
         const getGameSeqIdQuery = "SELECT IFNULL(MAX(gameseqid), 0) + 1 AS max_gameseqid FROM games WHERE gameid = ?"
@@ -41,12 +33,6 @@ export const create = (req,res) => {
             })
         })
     })
-
-    // db.query(q, [values], (err,data) => {
-    //     if(err) return err.json(err);
-    //     return res.status(200).json("Games has been created")
-    //     return res.json(response)
-    // });
 }
 
 export const update = (req,res) => {

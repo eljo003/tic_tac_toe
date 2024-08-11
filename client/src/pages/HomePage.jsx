@@ -1,58 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import InputPlayerNames from './InputPlayerNames';
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
+import axios from 'axios';
+
+const itemsPerPage = 5;
 
 const HomePage = () => {
     const [isInputPlayerNames, setIsInputPlayerNames] = useState(false);
     const [gameHistory, setGameHistory] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5; // Number of items per page
 
     const navigate = useNavigate();
-    
-    const StartNewGame = () => {
-        setIsInputPlayerNames(true);
-    }
-
-    const handleModalClose = () => {
-        setIsInputPlayerNames(false);
-    };
 
     useEffect(() => {
-      async function getData() {
-        try {
-          const res = await axios.post("http://localhost:8080/api/games/get/",[]);
-          const data = res.data;
-          setGameHistory(data);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      }
-  
-      getData();
-    }, []); 
+        const fetchGameHistory = async () => {
+            try {
+                const { data } = await axios.post("http://localhost:8080/api/games/get/", []);
+                setGameHistory(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchGameHistory();
+    }, []);
 
     const handleStartGame = async (name1, name2) => {
         const newInputs = {
-          "player1name": name1,
-          "player2name": name2,
-          "session": 'NEW'
-        }
+            player1name: name1,
+            player2name: name2,
+            session: 'NEW'
+        };
+
         setIsInputPlayerNames(false);
-        const res = await axios.post("http://localhost:8080/api/games/create/",{newInputs});
-        navigate('/game', {state: {player1:name1, player2:name2}});
+        await axios.post("http://localhost:8080/api/games/create/", { newInputs });
+        navigate('/game', { state: { player1: name1, player2: name2 } });
     };
 
-    // Calculate which items to display
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = gameHistory.slice(indexOfFirstItem, indexOfLastItem);
-
-    // Calculate total pages
     const totalPages = Math.ceil(gameHistory.length / itemsPerPage);
 
-    // Pagination controls
     const handlePageChange = (pageNumber) => {
         if (pageNumber > 0 && pageNumber <= totalPages) {
             setCurrentPage(pageNumber);
@@ -61,14 +50,20 @@ const HomePage = () => {
 
     return (
         <div className="h-full p-8 text-slate-800 bg-gradient-to-r from-gray-500 to-dark-500">
-            <h1 className="text-center text-5xl mb-4 font-display">
-                Tic Tac Toe Game
-            </h1>
+            <h1 className="text-center text-5xl mb-4 font-display">Tic Tac Toe Game</h1>
+
             <div className="flex justify-center mb-8">
-                <button className="bg-blue-500 text-white py-2 px-4 rounded" onClick={StartNewGame}>Start New Game</button>
+                <button 
+                    className="bg-blue-500 text-white py-2 px-4 rounded" 
+                    onClick={() => setIsInputPlayerNames(true)}
+                >
+                    Start New Game
+                </button>
             </div>
+
             <div className="flex flex-col justify-center items-center">
                 <h1 className="text-2xl font-bold mb-4">Game History</h1>
+
                 {gameHistory.length === 0 ? (
                     <p className="text-center text-lg text-gray-600">No game history available.</p>
                 ) : (
@@ -97,6 +92,7 @@ const HomePage = () => {
                                 ))}
                             </tbody>
                         </table>
+
                         {totalPages > 1 && (
                             <div className="mt-4">
                                 <button
@@ -119,12 +115,13 @@ const HomePage = () => {
                     </>
                 )}
             </div>
+
             <InputPlayerNames
                 isOpen={isInputPlayerNames}
-                onClose={handleModalClose}
+                onClose={() => setIsInputPlayerNames(false)}
                 onStart={handleStartGame}
             />
-        </div> 
+        </div>
     );
 };
 
